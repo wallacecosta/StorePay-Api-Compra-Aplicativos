@@ -1,4 +1,4 @@
-﻿namespace StorePay.Models
+﻿namespace StorePay.Api.Models
 {
     public class Aplicativo
     {

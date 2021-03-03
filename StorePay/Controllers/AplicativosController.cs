@@ -3,7 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using StorePay.Models;
+using StorePay.Api.Context;
+using StorePay.Api.Models;
 
 namespace StorePay.Api.Controllers
 {
