@@ -4,8 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using StorePay.Api.Configuration;
 using StorePay.Infra;
+using StorePay.Services;
 
 namespace StorePay
 {
@@ -21,8 +21,7 @@ namespace StorePay
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
-
+            services.AddServices(Configuration);
             services.AddInfrastructure(Configuration);
 
             services.AddControllers();

@@ -1,4 +1,4 @@
-﻿namespace StorePay.Api.Configuration
+﻿namespace StorePay.Services.Configuration
 {
     public class JwtConfig
     {
