@@ -1,4 +1,4 @@
-﻿namespace StorePay.Api.Models
+﻿namespace StorePay.Infra.Models
 {
     public class UserInfo
     {

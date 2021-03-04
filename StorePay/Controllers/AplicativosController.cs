@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using StorePay.Api.Context;
-using StorePay.Api.Models;
+using StorePay.Infra.Context;
+using StorePay.Infra.Models;
 
 namespace StorePay.Api.Controllers
 {
@@ -40,6 +41,7 @@ namespace StorePay.Api.Controllers
             return aplicativo;
         }
 
+        [Authorize]
         // PUT: api/Aplicativos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -71,6 +73,7 @@ namespace StorePay.Api.Controllers
             return NoContent();
         }
 
+        [Authorize]
         // POST: api/Aplicativos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -82,6 +85,7 @@ namespace StorePay.Api.Controllers
             return CreatedAtAction("GetAplicativo", new { id = aplicativo.Id }, aplicativo);
         }
 
+        [Authorize]
         // DELETE: api/Aplicativos/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAplicativo(int id)

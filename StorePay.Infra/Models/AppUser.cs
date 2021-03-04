@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace StorePay.Api.Models
+namespace StorePay.Infra.Models
 {
     public class AppUser : IdentityUser
     {

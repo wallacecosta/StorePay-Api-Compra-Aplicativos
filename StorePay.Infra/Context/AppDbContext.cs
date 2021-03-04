@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using StorePay.Api.Models;
+using StorePay.Infra.Models;
 
-namespace StorePay.Api.Context
+namespace StorePay.Infra.Context
 {
     public class AppDbContext : IdentityDbContext<AppUser>
     {

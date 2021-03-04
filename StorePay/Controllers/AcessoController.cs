@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using StorePay.Api.Models;
-using StorePay.Api.Services;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using StorePay.Infra.Models;
+using StorePay.Services;
 
 namespace StorePay.Api.Controllers
 {

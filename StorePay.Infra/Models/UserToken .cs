@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StorePay.Api.Models
+namespace StorePay.Infra.Models
 {
     public class UserToken
     {
