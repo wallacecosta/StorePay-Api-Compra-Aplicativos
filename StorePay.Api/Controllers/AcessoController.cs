@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using StorePay.Infra.Models;
 using StorePay.Services;
-using StorePay.Domain.Entities;
 using StorePay.Api.ViewModels;
 
 namespace StorePay.Api.Controllers
@@ -15,13 +13,13 @@ namespace StorePay.Api.Controllers
     {
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
-        private readonly IConfiguration _configuration;        
+        private readonly ITokenService _tokenService;      
 
-        public AcessoController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, IConfiguration configuration)
+        public AcessoController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, ITokenService tokenService)
         {
             _signInManager = signInManager;
-            _configuration = configuration;
             _userManager = userManager;
+            _tokenService = tokenService;
         }
 
         [HttpPost("Login")]
@@ -41,7 +39,7 @@ namespace StorePay.Api.Controllers
                 return FalhaLogin();
             }
 
-            return new TokenService(_configuration).BuildToken(userIdentity.Email);
+            return _tokenService.BuildToken(userIdentity.Email);
         }
 
         private ActionResult<UserToken> FalhaLogin()

@@ -9,6 +9,7 @@ namespace StorePay.Services
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<JwtConfig>(configuration.GetSection("JwtConfig"));
+            services.AddScoped<ITokenService, TokenService>();
 
             return services;
         }

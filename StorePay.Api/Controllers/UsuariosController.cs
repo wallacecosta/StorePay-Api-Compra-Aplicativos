@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using StorePay.Api.ViewModels;
 using StorePay.Domain.Comum.Enums;
 using StorePay.Domain.Entities;
@@ -13,23 +12,23 @@ using StorePay.Services;
 
 namespace StorePay.Api.Controllers
 {
-    
+
     [Route("api/[controller]")]
     [ApiController]
     public class UsuariosController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
+        private readonly ITokenService _tokenService;
         private IUsuarioRepository _usuarioRepository;
 
-        public UsuariosController(IUsuarioRepository usuarioRepository, IMapper mapper, IConfiguration configuration)
+        public UsuariosController(IUsuarioRepository usuarioRepository, IMapper mapper, ITokenService tokenService)
         {
             _usuarioRepository = usuarioRepository;
             _mapper = mapper;
-            _configuration = configuration;
+            _tokenService = tokenService;
         }
 
-
+        [Authorize]
         // GET: api/Usuarios
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UsuarioVM>>> GetUsuarios()
@@ -46,6 +45,7 @@ namespace StorePay.Api.Controllers
 
         }
 
+        [Authorize]
         // GET: api/Usuarios/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UsuarioVM>> GetUsuario(int id)
@@ -60,6 +60,7 @@ namespace StorePay.Api.Controllers
             return _mapper.Map<UsuarioVM>(usuario);
         }
 
+        [Authorize]
         // PUT: api/Usuarios/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -94,10 +95,10 @@ namespace StorePay.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            return new TokenService(_configuration).BuildToken(usuarioVM.Email);
-            
+            return _tokenService.BuildToken(usuarioVM.Email); 
         }
 
+        [Authorize]
         // DELETE: api/Usuarios/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuario(int id)

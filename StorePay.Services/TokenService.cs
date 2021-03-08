@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using StorePay.Domain.Entities;
 using StorePay.Infra.Models;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,7 +8,7 @@ using System.Text;
 
 namespace StorePay.Services
 {
-    public class TokenService
+    public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;
 
