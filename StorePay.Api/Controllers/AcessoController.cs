@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using StorePay.Infra.Models;
 using StorePay.Services;
+using StorePay.Domain.Entities;
+using StorePay.Api.ViewModels;
 
 namespace StorePay.Api.Controllers
 {
@@ -11,53 +13,41 @@ namespace StorePay.Api.Controllers
     [ApiController]
     public class AcessoController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-        private readonly IConfiguration _configuration;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IConfiguration _configuration;        
 
-        public AcessoController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration configuration)
+        public AcessoController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, IConfiguration configuration)
         {
-            _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
-        }
-                
-        [HttpPost("Criar")]
-        public async Task<ActionResult<UserToken>> CreateUser([FromBody] UserInfo usuario)
-        {
-            var user = new AppUser { UserName = usuario.Email, Email = usuario.Email };
-            var result = await _userManager.CreateAsync(user, usuario.Password);
-            if (result.Succeeded)
-            {
-                return new TokenService(_configuration).BuildToken(usuario);
-            }
-            else
-            {
-                foreach (var erro in result.Errors)
-                {
-                    ModelState.AddModelError(erro.Code, erro.Description);
-                }
-
-                return BadRequest(ModelState);
-            }
+            _userManager = userManager;
         }
 
         [HttpPost("Login")]
-        public async Task<ActionResult<UserToken>> Login([FromBody] UserInfo usuario)
+        public async Task<ActionResult<UserToken>> Login([FromBody] CredenciaisVM credenciais)
         {
-            var result = await _signInManager.PasswordSignInAsync(usuario.Email, usuario.Password,
-                 isPersistent: false, lockoutOnFailure: false);
+            var userIdentity = await _userManager.FindByNameAsync(credenciais.UserName);
 
-            if (result.Succeeded)
+            if(userIdentity == null)
             {
-                return new TokenService(_configuration).BuildToken(usuario);
+                return FalhaLogin();
             }
-            else
+
+            var result = await _signInManager.PasswordSignInAsync(userIdentity, credenciais.Password, false, false);
+
+            if (!result.Succeeded)
             {
-                ModelState.AddModelError("Login", "Não foi possível realizar login, usuário e/ou senha inválidos");
-                return BadRequest(ModelState);
+                return FalhaLogin();
             }
+
+            return new TokenService(_configuration).BuildToken(userIdentity.Email);
         }
 
+        private ActionResult<UserToken> FalhaLogin()
+        {
+            ModelState.AddModelError("Login", "Não foi possível realizar login, usuário e/ou senha inválidos");
+            return BadRequest(ModelState);
+        }
     }
 }

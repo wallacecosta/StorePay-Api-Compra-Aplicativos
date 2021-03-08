@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using StorePay.Api.Mappings;
 using StorePay.Infra;
 using StorePay.Services;
 
@@ -23,6 +24,7 @@ namespace StorePay
         {
             services.AddServices(Configuration);
             services.AddInfrastructure(Configuration);
+            services.AddAutoMapper(typeof(DomainToViewModel), typeof(ViewModelToDomain));
 
             services.AddControllers();
                 services.AddSwaggerGen(c =>

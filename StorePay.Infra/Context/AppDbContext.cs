@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using StorePay.Domain.Entities;
 using StorePay.Infra.Models;
 
 namespace StorePay.Infra.Context
@@ -11,6 +12,7 @@ namespace StorePay.Infra.Context
         }
 
         public DbSet<Aplicativo> Aplicativos { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

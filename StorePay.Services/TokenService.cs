@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using StorePay.Domain.Entities;
 using StorePay.Infra.Models;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,11 +18,11 @@ namespace StorePay.Services
             _configuration = configuration;
         }
 
-        public UserToken BuildToken(UserInfo userInfo)
+        public UserToken BuildToken(string email)
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.UniqueName, userInfo.Email),
+                new Claim(JwtRegisteredClaimNames.UniqueName, email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtConfig:Secret"]));

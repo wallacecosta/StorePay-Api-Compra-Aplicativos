@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using StorePay.Infra.Context;
-using StorePay.Infra.Models;
+using StorePay.Api.ViewModels;
+using StorePay.Domain.Comum.Enums;
+using StorePay.Domain.Entities;
+using StorePay.Domain.Interfaces;
 
 namespace StorePay.Api.Controllers
 {
@@ -13,61 +14,61 @@ namespace StorePay.Api.Controllers
     [ApiController]
     public class AplicativosController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private IAplicativoRepository _aplicativoRepository;
+        private readonly IMapper _mapper;
 
-        public AplicativosController(AppDbContext context)
+        public AplicativosController(IAplicativoRepository aplicativoRepository, IMapper mapper)
         {
-            _context = context;
+            _aplicativoRepository = aplicativoRepository;
+            _mapper = mapper;
         }
 
         // GET: api/Aplicativos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Aplicativo>>> GetAplicativos()
+        public async Task<ActionResult<IEnumerable<AplicativoVM>>> GetAplicativos()
         {
-            return await _context.Aplicativos.ToListAsync();
+            var aplicativos = await _aplicativoRepository.ObterTodos();
+            var listaAplicativos = new List<AplicativoVM>();
+
+            foreach (var item in aplicativos)
+            {
+                listaAplicativos.Add(_mapper.Map<AplicativoVM>(item));
+            }
+
+            return listaAplicativos;
         }
 
         // GET: api/Aplicativos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Aplicativo>> GetAplicativo(int id)
+        public async Task<ActionResult<AplicativoVM>> GetAplicativo(int id)
         {
-            var aplicativo = await _context.Aplicativos.FindAsync(id);
+            var aplicativo = await _aplicativoRepository.ObterPorId(id);
 
             if (aplicativo == null)
             {
                 return NotFound();
             }
 
-            return aplicativo;
+            return _mapper.Map<AplicativoVM>(aplicativo);
         }
 
         [Authorize]
         // PUT: api/Aplicativos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAplicativo(int id, Aplicativo aplicativo)
+        public async Task<IActionResult> PutAplicativo(int id, AplicativoVM aplicativoVM)
         {
-            if (id != aplicativo.Id)
+            if (id != aplicativoVM.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(aplicativo).State = EntityState.Modified;
+            var result = await _aplicativoRepository.Alterar(_mapper.Map<Aplicativo>(aplicativoVM));
 
-            try
+            if (result.Equals(Resultado.Falha))
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AplicativoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                ModelState.AddModelError("Error", "Ocorreu uma falha e não foi possível alterar o aplicativo.");
+                return BadRequest(ModelState);
             }
 
             return NoContent();
@@ -77,10 +78,16 @@ namespace StorePay.Api.Controllers
         // POST: api/Aplicativos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Aplicativo>> PostAplicativo(Aplicativo aplicativo)
+        public async Task<ActionResult<AplicativoVM>> PostAplicativo(AplicativoVM aplicativoVM)
         {
-            _context.Aplicativos.Add(aplicativo);
-            await _context.SaveChangesAsync();
+            var aplicativo = _mapper.Map<Aplicativo>(aplicativoVM);
+            var result = await _aplicativoRepository.Criar(_mapper.Map<Aplicativo>(aplicativoVM));
+
+            if (result.Equals(Resultado.Falha))
+            {
+                ModelState.AddModelError("Error", "Não foi possível criar o aplicativo.");
+                return BadRequest(ModelState);
+            }
 
             return CreatedAtAction("GetAplicativo", new { id = aplicativo.Id }, aplicativo);
         }
@@ -90,21 +97,22 @@ namespace StorePay.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAplicativo(int id)
         {
-            var aplicativo = await _context.Aplicativos.FindAsync(id);
+            var aplicativo = await _aplicativoRepository.ObterPorId(id);
             if (aplicativo == null)
             {
                 return NotFound();
             }
 
-            _context.Aplicativos.Remove(aplicativo);
-            await _context.SaveChangesAsync();
+            var result = await _aplicativoRepository.Excluir(aplicativo);
+
+            if (result.Equals(Resultado.Falha))
+            {
+                ModelState.AddModelError("Error", "Ocorreu uma falha e não foi possível deletar o aplicativo.");
+                return BadRequest(ModelState);
+            }
 
             return NoContent();
         }
 
-        private bool AplicativoExists(int id)
-        {
-            return _context.Aplicativos.Any(e => e.Id == id);
-        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace StorePay.Infra.Models
+﻿namespace StorePay.Domain.Entities
 {
     public class Aplicativo
     {
@@ -8,5 +8,10 @@
         public string Produtora { get; set; }
         public string Tamanho { get; set; }
         public decimal Preco { get; set; }
+
+        public Aplicativo()
+        {
+
+        }
     }
 }
