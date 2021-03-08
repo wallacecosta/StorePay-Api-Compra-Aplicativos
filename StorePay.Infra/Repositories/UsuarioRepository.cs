@@ -76,12 +76,22 @@ namespace StorePay.Infra.Repositories
 
         public async Task<Usuario> ObterPorId(int id)
         {
-            return await _context.Usuarios.FindAsync(id);
+            var usuario = await _context.Usuarios.FindAsync(id);
+            usuario.Password = string.Empty;
+
+            return usuario;
         }
 
         public async Task<IEnumerable<Usuario>> ObterTodos()
         {
-            return await _context.Usuarios.ToListAsync();
+            var listaUsuarios = await _context.Usuarios.ToListAsync();
+
+            foreach (var item in listaUsuarios)
+            {
+                item.Password = string.Empty;
+            }
+
+            return listaUsuarios;
         }
     }
 }
